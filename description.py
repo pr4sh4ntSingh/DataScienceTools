@@ -17,15 +17,17 @@ class description:
         show static information about dataframe.
         Dataframe should be initialized using constructer.
         """
+        print("---------------------------------------------")
         print("No of Rows "+str(len(self.df)))
         print("")
         print("No of Columns "+str(self.__no_of_columns()))
+        print("--------------------3 Sample rows-------------")
         print(self.df.head(3))
         print("")
-        print("Column Types:")
+        print("-----Column Types wise no of column------------")
         print(self.df.dtypes.value_counts())
         print("")
-        # dtype-wise name of columns
+        print("-----Column names group by col type------------")
         dtype_values=self.__get_type_wise_columns()
         self.__print_dict_of_list(dtype_values)
 
@@ -143,9 +145,3 @@ class description:
                     self.top_values(n,col_name, chart=chart,float_chart=float_chart,show_values=True)
                 else:
                     self.top_values(n,col_name, chart=chart,float_chart=float_chart,show_values=False)
-
-
-d=description(data)
-#d.top_values(10,'inb')
-d.show_static_information()
-d.show_top_values(10)
