@@ -11,23 +11,22 @@ class description:
     """
     def __init__(self,df):
         self.df=df
+        self.dtype_values=self.__get_type_wise_columns()
 
     def show_meta(self):
         """
         show static information about dataframe.
         Dataframe should be initialized using constructer.
         """
-        print("---------------------------------------------")
         print("No of Rows "+str(len(self.df)))
         print("")
         print("No of Columns "+str(self.__no_of_columns()))
-        print("--------------------3 Sample rows-------------")
         print(self.df.head(3))
         print("")
-        print("-----Column Types wise no of column------------")
+        print("Column Types:")
         print(self.df.dtypes.value_counts())
         print("")
-        print("-----Column names group by col type------------")
+        # dtype-wise name of columns
         dtype_values=self.__get_type_wise_columns()
         self.__print_dict_of_list(dtype_values)
 
@@ -145,3 +144,22 @@ class description:
                     self.top_values(n,col_name, chart=chart,float_chart=float_chart,show_values=True)
                 else:
                     self.top_values(n,col_name, chart=chart,float_chart=float_chart,show_values=False)
+
+    def describe_stats(self):
+        type_wise_cols=self.__get_type_wise_columns()
+        for key,value in type_wise_cols.items():
+            print("-----------"+str(key)+"-------------")
+            print(self.df.loc[:,value].describe())
+
+
+    def show_grids_of_histogram(self,type,layout):
+        """
+            Parameters
+            ----------
+            type : String
+                       type of column for which graph is being generated
+
+            layout: touple
+                        (row, column)
+        """
+        self.df[self.dtype_values[type]].hist(figsize=(14, 5), layout = layout);
