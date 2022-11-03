@@ -106,9 +106,9 @@ class description:
         else:
             p=self.df[col_name].value_counts()
             total=sum(p)
-            others=sum(p[n:])
-            p=p[:n]
-            p=p.set_value('_Others_', others)
+            others=sum(p.values[n:])
+            p=p.iloc[:n]
+            p['_Others_'] =  others
             p_per=p.apply(self.__percentage,total=total)
             functions = {'kde': p.plot.kde,
                          'bar':p.plot.bar,
