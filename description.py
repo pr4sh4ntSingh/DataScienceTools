@@ -4,7 +4,7 @@ from pylab import figure, axes, pie, title
 import pylab
 import math
 
-class description:
+class Description:
     """
     provides static information about dataframe
     column by column

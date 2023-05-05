@@ -6,6 +6,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
+from bokeh.palettes import Category20
 
 import random
 from bokeh.core.properties import value
@@ -16,7 +17,7 @@ from bokeh.io import show as bokeh_show
 from bokeh.plotting import figure
 
 
-class bivariate:
+class Bivariate:
     def __init__(self,df):
         self.df=df
 
@@ -132,7 +133,7 @@ class bivariate:
         sns.pairplot(self.df);
 
 
-    def bar_graph_with_color(self,col_name, stacked_col):
+    def bar_graph_with_color(self,col_name, stacked_col, file_name=None , legend_location="top_right" , legend_orientation="horizontal", inline=True):
         """
         displays histogram of given variable. and show distribution of Categorical variable
         this is best for Categorical-Categorical  bivariate analysis
@@ -145,46 +146,60 @@ class bivariate:
         stacked_col: String
                     column which is going to be displayed in colored bars
         """
-        output_file(r"D:\p.html")
+        if inline:
+            pass
+        else:
+            if file_name:
+                output_file(file_name)
+            else:
+                output_file(f'{col_name}-{stacked_col}.html')
 
         stacks_original = self.df[col_name].unique().tolist()
         bars_original = self.df[stacked_col].unique().tolist()
-        print(stacks_original)
-        stacks=[str(s)+"_"  for s in stacks_original]
-        bars=[str(s)+"_"  for s in bars_original]
+        #print(stacks_original)
+        stacks=[str(s)+""  for s in stacks_original]
+        bars=[str(s)+""  for s in bars_original]
 
-        print(bars_original)
-        colors = self.random_color(len(bars))
+        #print(bars_original)
+        Category20[2] = ('#1f77b4', '#aec7e8')
+        Category20[1] = ('#1f77b4')
+        colors = Category20[len(bars)] #self.random_color(len(bars))
 
         data_source = {k:[] for k in bars }
 
-        print(data_source)
+        #print(data_source)
 
         for bar_o,bar_str in zip(bars_original,bars):
             for stack in stacks_original:
                 data_source[bar_str].append(len(self.df.loc[(self.df[col_name]==stack)& (self.df[stacked_col]==bar_o) ,stacked_col]))
-
-
+        
+        #print(2)
+        #print(data_source)
         data_source['stacks_v']=stacks
+        #print("*"*10)
         #print(data_source)
 
-        p = figure(x_range=stacks, plot_height=550, title=col_name+" Counts by"+ stacked_col,
-                   toolbar_location="right", tools="pan,wheel_zoom,box_zoom,reset")
+        p = figure(x_range=stacks, plot_height=550, title=col_name+" Counts by "+ stacked_col,
+                   toolbar_location="right",  tools="hover,pan,wheel_zoom,box_zoom,reset" ,tooltips=" @stacks_v :: $name -> @$name")
 
-        print([value(str(x)+"_") for x in bars])
+        #print([value(str(x)+"_") for x in bars])
+        ll = [value(str(x)+"") for x in bars]
+        #print(ll)
         p.vbar_stack(bars, x='stacks_v', width=0.9, color=colors, source=data_source,
-                     legend=[value(str(x)+"_") for x in bars])
+                     legend=ll)
 
 
         p.y_range.start = 0
         p.x_range.range_padding = 0.1
         p.xgrid.grid_line_color = None
         p.axis.minor_tick_line_color = None
+        p.axis.major_label_orientation = 'vertical'
         p.outline_line_color = None
-        p.legend.location = "top_right"
-        p.legend.orientation = "horizontal"
-        bokeh_show(p)
-
+        p.legend.location = legend_location
+        p.legend.orientation = legend_orientation
+        bokeh_show(p) 
+        if inline:
+            output_notebook()
 
 
     def random_color(self,number_of_colors):
